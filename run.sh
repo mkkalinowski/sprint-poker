@@ -8,12 +8,7 @@ get_container_id() {
 
 is_running() {
 	if [ -f ".container" ]; then
-		RUNNING=$(docker inspect --format="{{ .State.Running }}" `get_container_id` 2> /dev/null)
-		if [ "$RUNNING" == "false" ]; then
-			return 1
-		else
-			return 0
-		fi
+		docker inspect --format="{{ .State.Running }}" `get_container_id` 2> /dev/null | grep true > /dev/null 2>&1
 	else
 		return 1
 	fi
