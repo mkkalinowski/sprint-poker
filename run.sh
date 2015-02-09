@@ -7,7 +7,14 @@ get_container_id() {
 }
 
 is_running() {
-    [ -f "$pid_file" ] && docker inspect `get_container_id` > /dev/null 2>&1
+	if [ -f ".container" ]; then
+		RUNNING=$(docker inspect --format="{{ .State.Running }}" `get_container_id` > /dev/null 2>&1)
+		if [ "$RUNNING" == "true" ]; then
+			return 0
+		fi
+	fi
+
+	return 1
 }
 
 case "$1" in
@@ -16,7 +23,6 @@ case "$1" in
         echo "Already started"
     else
         echo "Starting server..."
-        docker pull pandeiro/lein
         docker run -d -v $(pwd):/root -w /root -p $PORT:3000 pandeiro/lein lein ring server-headless > .container
 
         if ! is_running; then
