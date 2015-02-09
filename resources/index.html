@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Planning Poker</title>
+		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" />
+		<link rel="stylesheet" href="/css/style.css" />
+	</head>
+	<body>
+		<h1>Planning Poker</h1>
+
+		<section id="vote">
+			<h2>Your Vote:</h2>
+			<a class="card" href="javascript:;">1</a>
+			<a class="card" href="javascript:;">2</a>
+			<a class="card" href="javascript:;">3</a>
+			<a class="card" href="javascript:;">5</a>
+			<br />
+			<a class="card" href="javascript:;">8</a>
+			<a class="card" href="javascript:;">13</a>
+			<a class="card" href="javascript:;" data-points="question"><i class="fa fa-question"></i></a>
+			<a class="card" href="javascript:;" data-points="coffee"><i class="fa fa-coffee"></i></a>
+		</section>
+
+		<section id="votes" class="hidden">
+			<h2>Votes</h2>
+		</section>
+
+		<button id="toggle">Reveal</button>
+		<button id="reset">Reset</button>
+
+		<script src="/js/zepto.min.js"></script>
+		<script src="/js/client.js"></script>
+	</body>
+</html>

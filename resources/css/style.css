@@ -1,0 +1,24 @@
+body {
+  font-family: sans-serif;
+}
+
+.card {
+  background-image: url('/img/card.jpg');
+  background-repeat: none;
+  background-size: 100%;
+  border: 2px solid #fff;
+  box-sizing: border-box;
+  color: #000;
+  display: inline-block;
+  font-size: 32px;
+  font-weight: 800;
+  height: 250px;
+  padding-top: 105px;
+  text-align: center;
+  text-decoration: none;
+  width: 160px;
+}
+
+.card.selected {
+  border: 2px solid #000;
+}
