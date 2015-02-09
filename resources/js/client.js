@@ -22,6 +22,7 @@ $(function () {
 	function handleUpdateVotes(data) {
 		$('#votes .card').remove();
 
+		var wasReset = true;
 		$.each(data, function (clientId, points) {
 			var card = $('<a class="card">');
 
@@ -36,15 +37,22 @@ $(function () {
 					card.text(points);
 			}
 
-			card.data('client-id', clientId);
+			if (clientId == id) {
+				wasReset = false;
+			}
 
 			$('#votes').append(card)
 		});
+
+		if (wasReset) {
+			$('#vote .card').removeClass('selected');
+		}
 	}
 
 	$('#vote .card').click(function (e) {
 		var card = $(e.currentTarget);
 		var points = card.data('points') || Number(card.text());
+
 		$('#vote .card').removeClass('selected');
 		card.addClass('selected');
 
