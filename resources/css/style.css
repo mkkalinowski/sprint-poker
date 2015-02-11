@@ -1,24 +1,32 @@
 body {
-  font-family: sans-serif;
+	font-family: 'Open Sans', sans-serif;
+}
+
+h1 {
+	font-weight: 800;
+}
+
+h2 {
+	font-weight: 300;
 }
 
 .card {
-  background-image: url('/img/card.jpg');
-  background-repeat: none;
-  background-size: 100%;
-  border: 2px solid #fff;
-  box-sizing: border-box;
-  color: #000;
-  display: inline-block;
-  font-size: 32px;
-  font-weight: 800;
-  height: 250px;
-  padding-top: 105px;
-  text-align: center;
-  text-decoration: none;
-  width: 160px;
+	background-image: url('/img/card.jpg');
+	background-repeat: none;
+	background-size: 100%;
+	border: 2px solid #fff;
+	box-sizing: border-box;
+	color: #000;
+	display: inline-block;
+	font-size: 32px;
+	font-weight: 800;
+	height: 250px;
+	padding-top: 97px;
+	text-align: center;
+	text-decoration: none;
+	width: 160px;
 }
 
 .card.selected {
-  border: 2px solid #000;
+	border: 2px solid #000;
 }
