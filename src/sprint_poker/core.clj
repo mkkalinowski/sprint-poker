@@ -4,7 +4,9 @@
             [ring.middleware.file-info :refer [wrap-file-info]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.resource :refer [wrap-resource]]
-            [ring.util.response :refer [content-type redirect response status]]))
+            [ring.server.standalone :refer [serve]]
+            [ring.util.response :refer [content-type redirect response status]])
+  (:gen-class :main true))
 
 (def data (atom {:revealed false :votes {}}))
 
@@ -72,3 +74,5 @@
       (wrap-params)
       (wrap-resource "/")
       (wrap-file-info)))
+
+(defn -main [] (serve handler))
