@@ -20,7 +20,7 @@ case "$1" in
         echo "Already started"
     else
         echo "Starting server..."
-        docker run -d -v $(pwd):/root -w /root -p $PORT:3000 pandeiro/lein lein ring server-headless > .container
+        docker run -d -p $PORT:3000 tokenshift/sprint-poker > .container
 
         if ! is_running; then
             echo "Failed to start!"
