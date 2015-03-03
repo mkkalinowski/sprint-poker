@@ -1,18 +1,12 @@
 $(function () {
-	var id = (function() {
-		function s4() {
-			return Math.floor((1 + Math.random()) * 0x10000)
-				.toString(16)
-				.substring(1);
-		}
-		
-		return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-		       s4() + '-' + s4() + s4() + s4();
+	var roomId = (function() {
+		var matches = /\/([0-9a-z\-]{36})/i.exec(window.location.pathname);
+		return matches && matches[1];
 	})();
 
 	function updateVotes() {
 		$.ajax({
-			url: '/votes',
+			url: '/'+roomId+'/votes',
 			type: 'GET',
 			dataType: 'json',
 			success: handleUpdateVotes
@@ -20,12 +14,15 @@ $(function () {
 	}
 
 	function handleUpdateVotes(data) {
-		$('#votes .card').remove();
+		$('#votes .vote').remove();
 
-		var wasReset = true;
-		$.each(data, function (clientId, points) {
+		$.each(data, function (clientId, data) {
+			var points = data.points;
+			var name = data.name;
+			
+			var vote = $('<div class="vote">');
+
 			var card = $('<a class="card">');
-
 			switch(points) {
 				case 'question':
 					card.append($('<i>').addClass('fa fa-question'));
@@ -37,30 +34,33 @@ $(function () {
 					card.text(points);
 			}
 
-			if (clientId == id) {
-				wasReset = false;
-			}
+			var header = $('<h3>').text(name);
 
-			$('#votes').append(card)
+			vote.append(card)
+			vote.append(header);
+
+			$('#votes').append(vote)
 		});
 
-		if (wasReset) {
+		// Check if the votes were reset.
+		if (Object.keys(data).length == 0) {
 			$('#vote .card').removeClass('selected');
 		}
 	}
 
 	$('#vote .card').click(function (e) {
 		var card = $(e.currentTarget);
+		var name = $('#your_name').val();
 		var points = card.data('points') || Number(card.text());
 
 		$('#vote .card').removeClass('selected');
 		card.addClass('selected');
 
 		$.ajax({
-			url: '/vote',
+			url: '/'+roomId+'/vote',
 			type: 'PUT',
 			data: {
-				'client-id': id,
+				'name': name,
 				'points': points
 			},
 			dataType: 'json',
@@ -70,7 +70,7 @@ $(function () {
 
 	$('#toggle').click(function (e) {
 		$.ajax({
-			url: '/reveal',
+			url: '/'+roomId+'/reveal',
 			type: 'POST',
 			dataType: 'json',
 			success: handleUpdateVotes
@@ -79,7 +79,7 @@ $(function () {
 
 	$('#reset').click(function (e) {
 		$.ajax({
-			url: '/reset',
+			url: '/'+roomId+'/reset',
 			type: 'POST',
 			dataType: 'json',
 			success: handleUpdateVotes

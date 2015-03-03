@@ -1,78 +1,99 @@
 (ns sprint-poker.core
   (:require [clojure.data.json :as json]
             [clojure.algo.generic.functor :refer [fmap]]
+            [compojure.core :refer :all]
             [ring.middleware.file-info :refer [wrap-file-info]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.resource :refer [wrap-resource]]
+            [ring.middleware.session :refer [wrap-session]]
             [ring.server.standalone :refer [serve]]
-            [ring.util.response :refer [content-type redirect response status]])
+            [ring.util.response :refer :all])
   (:gen-class :main true))
 
-(def data (atom {:revealed false :votes {}}))
+(def data (atom {}))
+
+(defn new-id
+  "Create a new randomly generated ID."
+  []
+  (str (java.util.UUID/randomUUID)))
+
+(defn create-new-room
+  "Create a new room and redirect to it."
+  [req]
+  (let [room-id (new-id)]
+    (println "create-new-room:" room-id)
+    (swap! data #(assoc % room-id {:revealed false :votes {}}))
+    (response "")
+    (redirect (str "/" room-id))))
 
 (defn get-votes
-  "Return a map of all votes."
-  [req]
-  (println "get-votes" @data)
-  (if (:revealed @data)
-    (-> (response (json/write-str (:votes @data)))
-        (content-type "application/json"))
-    (-> (response (json/write-str (fmap (fn [v] "-") (:votes @data))))
-        (content-type "application/json"))))
+  "Return a map of all votes in the room."
+  [{{room-id :room-id} :route-params {user-id :id} :session}]
+  {:pre [(string? room-id) (string? user-id)]}
+  (let [room-data (get @data room-id)]
+    (println "get-votes" room-id user-id room-data)
+    (if (:revealed room-data)
+      (-> (response (json/write-str (:votes room-data)))
+          (content-type "application/json"))
+      ; Show who has voted, but obscure the points themselves.
+      (-> (fmap #(assoc % :points "-") (:votes room-data))
+          (or {})
+          (json/write-str)
+          (response)
+          (content-type "application/json")))))
 
 (defn put-vote
-  [{{client-id "client-id" points "points"} :params :as req}]
-  {:pre [(string? client-id) (string? points)]}
-  (println "put-vote" client-id points)
-  (swap! data #(assoc-in % [:votes client-id] points))
+  [{{room-id :room-id name "name" points "points"} :params {user-id :id} :session :as req}]
+  {:pre [(string? room-id) (string? user-id) (string? points)]}
+  (println "put-vote" room-id user-id points)
+  (swap! data #(assoc-in % [room-id :votes user-id] {:name name :points points}))
   (get-votes req))
 
 (defn reveal-votes
-  [req]
-  (println "reveal-votes")
-  (swap! data #(assoc-in % [:revealed] true))
+  [{{room-id :room-id} :route-params {user-id :id} :session :as req}]
+  {:pre [(string? room-id) (string? user-id)]}
+  (println "reveal-votes" room-id user-id)
+  (swap! data #(assoc-in % [room-id :revealed] true))
   (get-votes req))
 
 (defn reset-votes
-  [req]
-  (println "reset-votes")
-  (reset! data {:revealed false :votes {}})
+  [{{room-id :room-id} :route-params {user-id :id} :session :as req}]
+  {:pre [(string? room-id) (string? user-id)]}
+  (println "reset-votes" room-id user-id)
+  (swap! data #(assoc % room-id {:revealed false :votes {}}))
   (get-votes req))
 
-(defn redirect-to
-  [url]
-  (fn [req]
-    (response "")
-    (redirect url)))
+(defroutes app
+  ; GET / => redirect to /{new room id}
+  (GET "/" [] create-new-room)
+  (context "/:room-id" [room-id]
+    ; GET /{room-id} => render index.html
+    (GET "/" [] (file-response "resources/index.html"))
+    ; GET /{room-id}/votes => get-votes
+    (GET "/votes" [] get-votes)
+    ; PUT /{room-id}/vote => put-vote
+    (PUT "/vote" [] put-vote)
+    ; POST /{room-id}/reveal => reveal-votes
+    (POST "/reveal" [] reveal-votes)
+    ; POST /{room-id}/reset => reset-votes
+    (POST "/reset" [] reset-votes)))
 
-(defn app
-  [req]
-  ; Teh most advanced router evar!!1one!!!
-  ((or (and (= :get (:request-method req))
-            (= "/" (:uri req))
-            (redirect-to "/index.html"))
-       (and (= :get (:request-method req))
-            (= "/votes" (:uri req))
-            get-votes)
-       (and (= :put (:request-method req))
-            (= "/vote" (:uri req))
-            put-vote)
-       (and (= :post (:request-method req))
-            (= "/reveal" (:uri req))
-            reveal-votes)
-       (and (= :post (:request-method req))
-            (= "/reset" (:uri req))
-            reset-votes)
-       (throw (IllegalArgumentException. (str "Unmatched route: "
-                                              (:request-method req)
-                                              " "
-                                              (:uri req)))))
-     req))
+(defn wrap-user-id
+  "Assigns the user a randomly generated ID."
+  [handler]
+  (fn [req]
+    (let [id (or (get-in req [:session :id])
+                 (new-id))
+          req' (assoc-in req [:session :id] id)
+          res (handler req')]
+      (assoc-in res [:session :id] id))))
 
 (def handler
   (-> app
       (wrap-params)
       (wrap-resource "/")
-      (wrap-file-info)))
+      (wrap-file-info)
+      (wrap-user-id)
+      (wrap-session)))
 
 (defn -main [] (serve handler))
