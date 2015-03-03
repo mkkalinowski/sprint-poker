@@ -1,4 +1,4 @@
-(defproject sprint-poker "0.1.1"
+(defproject sprint-poker "0.1.2"
   :description "Simple planning poker app."
   :url "https://github.com/tokenshift/sprint-poker"
   :license {:url "https://github.com/tokenshift/sprint-poker/blob/master/LICENSE"}

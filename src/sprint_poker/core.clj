@@ -2,6 +2,7 @@
   (:require [clojure.data.json :as json]
             [clojure.algo.generic.functor :refer [fmap]]
             [compojure.core :refer :all]
+            [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.file-info :refer [wrap-file-info]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.resource :refer [wrap-resource]]
@@ -96,4 +97,5 @@
       (wrap-user-id)
       (wrap-session)))
 
-(defn -main [] (serve handler))
+(defn -main []
+  (run-jetty #'handler {:port 3000 :join? false}))
