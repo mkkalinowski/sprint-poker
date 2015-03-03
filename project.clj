@@ -1,8 +1,7 @@
-(defproject sprint-poker "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
-  :license {:name "Eclipse Public License"
-            :url "http://www.eclipse.org/legal/epl-v10.html"}
+(defproject sprint-poker "0.1.1"
+  :description "Simple planning poker app."
+  :url "https://github.com/tokenshift/sprint-poker"
+  :license {:url "https://github.com/tokenshift/sprint-poker/blob/master/LICENSE"}
   :dependencies [[compojure "1.3.2"]
                  [org.clojure/algo.generic "0.1.2"]
                  [org.clojure/clojure "1.6.0"]
