@@ -13,4 +13,4 @@ echo cp $UBERJAR sprint-poker.jar
 cp $UBERJAR sprint-poker.jar
 
 # Build the image.
-docker build -t tokenshift/sprint-planning ./
+docker build -t tokenshift/sprint-poker ./
