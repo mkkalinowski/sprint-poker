@@ -3,7 +3,7 @@
             [clojure.algo.generic.functor :refer [fmap]]
             [compojure.core :refer :all]
             [ring.adapter.jetty :refer [run-jetty]]
-            [ring.middleware.file-info :refer [wrap-file-info]]
+            [ring.middleware.content-type :refer [wrap-content-type]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.middleware.session :refer [wrap-session]]
@@ -69,7 +69,8 @@
   (GET "/" [] create-new-room)
   (context "/:room-id" [room-id]
     ; GET /{room-id} => render index.html
-    (GET "/" [] (file-response "resources/index.html"))
+    (GET "/" [] (-> (file-response "resources/index.html")
+                    (content-type "text/html")))
     ; GET /{room-id}/votes => get-votes
     (GET "/votes" [] get-votes)
     ; PUT /{room-id}/vote => put-vote
@@ -93,9 +94,9 @@
   (-> app
       (wrap-params)
       (wrap-resource "/")
-      (wrap-file-info)
+      (wrap-content-type)
       (wrap-user-id)
       (wrap-session)))
 
 (defn -main []
-  (run-jetty #'handler {:port 3000 :join? false}))
+  (run-jetty handler {:port 3000 :join? false}))

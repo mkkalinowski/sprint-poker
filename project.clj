@@ -1,4 +1,4 @@
-(defproject sprint-poker "0.1.2"
+(defproject sprint-poker "0.1.3"
   :description "Simple planning poker app."
   :url "https://github.com/tokenshift/sprint-poker"
   :license {:url "https://github.com/tokenshift/sprint-poker/blob/master/LICENSE"}
@@ -8,7 +8,5 @@
                  [org.clojure/data.json "0.2.5"]
                  [ring/ring-core "1.3.2"]
                  [ring-server "0.4.0"]]
-  :plugins [[lein-ring "0.9.1"]]
-  :ring {:handler sprint-poker.core/handler}
   :main sprint-poker.core
   :aot [sprint-poker.core])
