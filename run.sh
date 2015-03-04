@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PORT=80
+PORT=3000
 
 get_container_id() {
 	cat ".container"
@@ -20,7 +20,7 @@ case "$1" in
         echo "Already started"
     else
         echo "Starting server..."
-        docker run -d -v $(pwd):/root -w /root -p $PORT:3000 java:openjdk-7-jre java -jar sprint-poker.jar > .container
+        docker run -d -v $(pwd):/root -w /root -p $PORT:3000 tokenshift/sprint-poker > .container
 
         if ! is_running; then
             echo "Failed to start!"
