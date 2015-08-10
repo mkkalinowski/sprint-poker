@@ -22,6 +22,10 @@ h3 {
 	vertical-align: top;
 }
 
+.vote h3 {
+	font-size: 16px;
+}
+
 .card {
 	background-image: url('/img/card.jpg');
 	background-repeat: none;
@@ -30,13 +34,13 @@ h3 {
 	box-sizing: border-box;
 	color: #000;
 	display: inline-block;
-	font-size: 32px;
+	font-size: 24px;
 	font-weight: 800;
-	height: 250px;
-	padding-top: 97px;
+	height: 175px;
+	padding-top: 65px;
 	text-align: center;
 	text-decoration: none;
-	width: 160px;
+	width: 112px;
 }
 
 .card.selected {
