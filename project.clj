@@ -10,4 +10,5 @@
                  [ring/ring-core "1.3.2"]
                  [ring-server "0.4.0"]]
   :main sprint-poker.core
+  :uberjar-name "sprint-poker-standalone.jar"
   :aot [sprint-poker.core])
