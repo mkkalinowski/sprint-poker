@@ -2,6 +2,7 @@
   (:require [clojure.data.json :as json]
             [clojure.algo.generic.functor :refer [fmap]]
             [compojure.core :refer :all]
+            [environ.core :refer [env]]
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.content-type :refer [wrap-content-type]]
             [ring.middleware.params :refer [wrap-params]]
@@ -69,7 +70,7 @@
   (GET "/" [] create-new-room)
   (context "/:room-id" [room-id]
     ; GET /{room-id} => render index.html
-    (GET "/" [] (-> (file-response "resources/index.html")
+    (GET "/" [] (-> (resource-response "index.html")
                     (content-type "text/html")))
     ; GET /{room-id}/votes => get-votes
     (GET "/votes" [] get-votes)
@@ -99,4 +100,4 @@
       (wrap-session)))
 
 (defn -main []
-  (run-jetty handler {:port 3000 :join? false}))
+  (run-jetty handler {:port (Integer. (:port env 3000)) :join? false}))
